@@ -1,0 +1,23 @@
+Date,Transaction Type,Reference Number,Description,Amount,Source
+2025-03-01,Check Issued,101,Payment to Supplier A,-2000,Cash Book
+2025-03-01,Deposit,NA,Customer Payment + Invoice #123,5000,Bank Statement
+2025-03-02,Deposit,NA,Customer Payment + Invoice #124,5000,Cash Book
+2025-03-02,Bank Fee,NA,Monthly Service Charge,-50,Bank Statement
+2025-03-03,Deposit,NA,Customer Wire Transfer (Direct Deposit),7000,Bank Statement
+2025-03-04,Check Issued,102,Payroll Payment,-5000,Cash Book
+2025-03-05,Withdrawal,NA,Loan Repayment,-3000,Cash Book
+2025-03-05,Withdrawal,NA,Loan Repayment,-2900,Bank Statement
+2025-03-06,Deposit,NA,Deposit in Transit,3000,Cash Book
+2025-03-07,Error,NA,Bank Recorded Wrong Amount (should be $1000),900,Bank Statement
+2025-03-08,Check Cleared,101,Payment to Supplier A,-2000,Bank Statement
+2025-03-09,Check Cleared,102,Payroll Payment,-5000,Bank Statement
+2025-03-10,Interest Earned,NA,Interest Credit,25,Bank Statement
+2025-03-11,Check Issued,103,Payment to Supplier B,-1500,Cash Book
+2025-03-12,Check Issued,104,Office Rent Payment,-2500,Cash Book
+2025-03-13,Check Cleared,103,Payment to Supplier B,-1500,Bank Statement
+2025-03-14,Unknown Deposit,NA,Unrecognized Credit in Bank,800,Bank Statement
+2025-03-15,Check Cleared,104,Office Rent Payment,-2500,Bank Statement
+2025-03-16,Check Issued,105,Equipment Purchase,-4000,Cash Book
+2025-03-17,Fraudulent Transaction,NA,Unauthorized Withdrawal,-1000,Bank Statement
+2025-03-18,Duplicate Entry,NA,Accidental Double Entry of Payroll Payment,-5000,Cash Book
+2025-03-19,Duplicate Entry,NA,Bank Processed Payroll Twice,-5000,Bank Statement
