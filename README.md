@@ -14,6 +14,8 @@
 
 ## 🎯 Introduction
 
+**This AI agent mimics real-world Ops teams, handling missing transactions, amount mismatches, fraud detection, and resolution autonomously.**
+
 🚀 Overview
 This repository contains a fully agentic AI reconciliation system that:
 
@@ -22,8 +24,6 @@ This repository contains a fully agentic AI reconciliation system that:
 -   ✅ Performs tool-based investigations (query history, update records, escalate issues, etc.)
 -   ✅ Minimizes false positives using statistical thresholds & ML-based anomaly detection
 -   ✅ Supports auditability through structured tool execution logs
-
-This AI agent mimics real-world Ops teams, handling missing transactions, amount mismatches, fraud detection, and resolution autonomously.
 
 ## 🎥 Demo
 
