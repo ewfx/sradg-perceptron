@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Processing Result</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container">
+    <h1 class="mt-5">Output CSV and Actions</h1>
+    <h3>Output CSV</h3>
+    <pre>{{ output_csv }}</pre>
+    <h3>Actions Taken</h3>
+    <pre>{{ actions }}</pre>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Back</a>
+</body>
+</html>

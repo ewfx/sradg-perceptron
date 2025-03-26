@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSV Processing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container">
+    <h1 class="mt-5">Upload CSV Files</h1>
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="historical_file" class="form-label">Historical CSV File</label>
+            <input type="file" name="historical_file" id="historical_file" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="current_file" class="form-label">Current CSV File</label>
+            <input type="file" name="current_file" id="current_file" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Process Files</button>
+    </form>
+</body>
+</html>
