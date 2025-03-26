@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from typing import Dict, Any, Optional
 import uuid
 from langchain_core.tools import tool
@@ -191,53 +192,6 @@ class ReconciliationTools:
                                        'Amount Mismatch: Correct Book Amount'])
         }
 
-    @tool
-    def statistical_analysis(self, transaction_id: str) -> Dict[str, Any]:
-        """
-        Generate statistical context for a transaction.
-        
-        Parameters:
-        - transaction_id: ID to analyze
-        
-        Returns:
-        Statistical summary compared to historical data
-        
-        Example:
-        >>> statistical_analysis('TXN202')
-        """
-        # transaction = self.current_data[
-        #     self.current_data['Transaction ID'] == transaction_id
-        # ].iloc[0]
-        
-        # historical_stats = self.historical_data.describe().to_dict()
-        
-        # return {
-        #     'transaction_id': transaction_id,
-        #     'amount_percentile': {
-        #         'bank': self._calculate_percentile(transaction['Bank Statement Amount'], 'Bank Statement Amount'),
-        #         'book': self._calculate_percentile(transaction['Book Records Amount'], 'Book Records Amount')
-        #     },
-        #     'z_scores': {
-        #         'bank': self._calculate_zscore(transaction['Bank Statement Amount'], 'Bank Statement Amount'),
-        #         'book': self._calculate_zscore(transaction['Book Records Amount'], 'Book Records Amount')
-        #     },
-        #     'historical_comparison': historical_stats
-        # }
-        return {
-            'transaction_id': 'TXN-007488',
-            'z_scores': 22,
-            'amount_percentile': 0.5,
-            'historical_comparison': 42314
-        }
-
-    def _calculate_percentile(self, value: float, column: str) -> float:
-        return (self.historical_data[column] < value).mean()
-
-    def _calculate_zscore(self, value: float, column: str) -> float:
-        mu = self.historical_data[column].mean()
-        sigma = self.historical_data[column].std()
-        return (value - mu) / sigma if sigma != 0 else 0
-
     def load_model(self, filename='encoder.pkl'):
         with open(filename, 'rb') as f:
             model = cloudpickle.load(f)
@@ -257,14 +211,17 @@ class ReconciliationTools:
         Example:
         >>> get_prediction({'Transaction ID': 'TXN-006253','Date': '2040-02-13','Account Number': 'ACCT-611080','Bank Name': 'Bank of America','Bank Statement Amount': '-4.0030627','Book Records Amount': '-4.087139','Match Status': 'Break'})
         """
-        feature_cols = ["Date", "Account Number", "Bank Name",
+        try:
+            feature_cols = ["Date", "Account Number", "Bank Name",
             "Bank Statement Amount", "Book Records Amount", "Match Status"]
-        model = self.load_model('models/ml-models/xgb_pipeline_model.pkl')
-        encoder = self.load_model('models/ml-models/label_encoder.pkl')
-        anomaly, confidence = predict_single_record(model, encoder, feature_cols, transaction_record)
-        return {
-            'transaction_id': transaction_record.get('Transaction ID', 'NEW'),
-            'anomaly_score': anomaly,
-            'confidence': confidence,
-            'model_version': 'XGBoost_v1'
-        }
+            model = self.load_model('models/ml-models/xgb_pipeline_model.pkl')
+            encoder = self.load_model('models/ml-models/label_encoder.pkl')
+            anomaly, confidence = predict_single_record(model, encoder, feature_cols, transaction_record)
+            return {
+                'transaction_id': transaction_record.get('Transaction ID', 'NEW'),
+                'anomaly_score': anomaly,
+                'confidence': confidence,
+                'model_version': 'XGBoost_v1'
+            }
+        except Exception as e:
+            return f"Prediction failed: {str(e)}"

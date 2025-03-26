@@ -14,60 +14,29 @@ import requests
 from preprocess import load_and_preprocess_data
 from tools import ReconciliationTools
 from query_tool import HistoricalDataQueryTool
+from statistical import StatisticalAnalysisTool
 
 load_dotenv()
 
 llm = ChatGroq(model="deepseek-r1-distill-qwen-32b", model_kwargs={
-        "max_completion_tokens": 1000
+        "max_completion_tokens": 4000
     })
-
-# Define tools
-# @tool
-# def multiply(a: int, b: int) -> int:
-#     """Multiply a and b.
-
-#     Args:
-#         a: first int
-#         b: second int
-#     """
-#     return a * b
-
-
-# @tool
-# def add(a: int, b: int) -> int:
-#     """Adds a and b.
-
-#     Args:
-#         a: first int
-#         b: second int
-#     """
-#     return a + b
-
-
-# @tool
-# def divide(a: int, b: int) -> float:
-#     """Divide a and b.
-
-#     Args:
-#         a: first int
-#         b: second int
-#     """
-#     return a / b
 
 historical_file = "data/synthetic_historical_report.csv"
 current_file = "data/synthetic_current_report.csv"
 historical_data, current_data = load_and_preprocess_data(historical_file, current_file)
 recon_tools = ReconciliationTools(historical_data, current_data)
 query_tool = HistoricalDataQueryTool(historical_data)
+stat_tool = StatisticalAnalysisTool(historical_data, current_data)
 
 # Augment the LLM with tools
 tools = [recon_tools.currency_conversion,
          recon_tools.escalate_to_finance,
          query_tool.query,
-         recon_tools.update_amount_bank,
-         recon_tools.update_amount_book,
+         recon_tools.update_amount,
+         recon_tools.remove_transaction,
          recon_tools.get_more_details,
-         recon_tools.statistical_analysis,
+         stat_tool.statistical_analysis,
          recon_tools.get_prediction,
          recon_tools.human_alert]
 
@@ -189,14 +158,11 @@ human_message_template = f"""\
 - **Book Records Amount**: {trans['Book Records Amount']}
 - **Date**: {trans['Date']} 
 
-** CALL A TOOL ONLY ONCE **
-
-### Required Actions And OUtput Format
-1. Reconciliation status with confidence score  
-2. Tool chain execution path (e.g., `query() → statistical_analysis() → escalate()`)  
-3. Plain English summary for auditors  
-
-Show function tools call in xml format.
+### Required Actions And Output Format
+1. Tool chain execution along with explanation 
+2. Mention each tool call request and response (Show tool call in xml format)
+3. Reconciliation status with confidence score 
+4. Plain English summary for auditors  
 """  
 
 messages = [HumanMessage(content=human_message_template)]
