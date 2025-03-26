@@ -4,13 +4,11 @@
 
 -   [Introduction](#introduction)
 -   [Demo](#demo)
--   [Inspiration](#inspiration)
 -   [What It Does](#what-it-does)
 -   [How We Built It](#how-we-built-it)
 -   [Challenges We Faced](#challenges-we-faced)
 -   [How to Run](#how-to-run)
 -   [Tech Stack](#tech-stack)
--   [Team](#team)
 
 ---
 
@@ -80,6 +78,7 @@ Automates financial reconciliation using AI agents to detect mismatches (amounts
 2. Install dependencies
     ```sh
     conda env create -f environment.yml  # or pip install -r requirements.txt (for Python)
+    conda activate ghack
     ```
 3. Run the project
     ```sh
