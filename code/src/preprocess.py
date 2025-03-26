@@ -22,7 +22,7 @@ def load_and_preprocess_data(historical_file: str, current_file: str):
     current_data['Amount_Difference'] = current_data['Bank Statement Amount'] - current_data['Book Records Amount']
 
     # Encode account numbers
-    encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+    encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=951048)
     historical_data['Account Number'] = encoder.fit_transform(historical_data[['Account Number']])
     current_data['Account Number'] = encoder.transform(current_data[['Account Number']])
 

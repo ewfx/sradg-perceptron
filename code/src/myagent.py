@@ -20,7 +20,10 @@ from tools.details import DetailTool
 from tools.escalate import EscalateTool
 from tools.prediction import PredictionTool
 from tools.remove import RemoveTransactionTool
+from random_record import record
 
+# Load the transaction
+trans = record()
 
 ## Load the LLM
 load_dotenv()
@@ -62,6 +65,7 @@ tools = [query_tool.query,
 tools_by_name = {tool.name: tool for tool in tools}
 llm_with_tools = llm.bind_tools(tools)
 
+trans['Account Number'] = 'ACCT-611080'
 time_diff_threshold = 3  # From your TimeDifferenceAgent
 amt_variance_threshold = 100  
 percent_variance_threshold = 2
@@ -151,23 +155,26 @@ agent_builder.add_edge("environment", "llm_call")
 # Compile the agent
 agent = agent_builder.compile()
 
-trans = {
-    'Transaction ID': '3156.0',
-    'Date': '2040-02-13',
-    'Account Number': 'ACCT-611080',
-    'Bank Name': 'Bank of America',
-    'Bank Statement Amount': '-4.0030627',
-    'Book Records Amount': '-4.087139',
-    'Match Status': 'Break',
-}
+# trans = {
+#     'Transaction ID': '3156.0',
+#     'Date': '2040-02-13',
+#     'Account Number': 'ACCT-611080',
+#     'Bank Name': 'Bank of America',
+#     'Bank Statement Amount': '-4.0030627',
+#     'Book Records Amount': '-4.087139',
+#     'Match Status': 'Break',
+#     'Amount_Difference': -329.43
+# }
+# print(trans)
 
 human_message_template = f"""\
 ### Transaction Details  
 - **ID**: {trans['Transaction ID']}  
 - **Account**: {trans['Account Number']}
-- **Bank**: {trans['Bank Name']}  
+- **Bank Name**: {trans['Bank Name']}  
 - **Bank Statement Amount**: {trans['Bank Statement Amount']}  
 - **Book Records Amount**: {trans['Book Records Amount']}
+- **Amount Difference**: {trans['Amount_Difference']}
 - **Date**: {trans['Date']} 
 
 ### Required Actions And Output Format
@@ -175,7 +182,9 @@ human_message_template = f"""\
 2. Mention each tool call request and response (Show tool call in xml format)
 3. Reconciliation status with confidence score 
 4. Plain English summary for auditors  
-"""  
+""" 
+
+# print(human_message_template)
 
 messages = [HumanMessage(content=human_message_template)]
 
