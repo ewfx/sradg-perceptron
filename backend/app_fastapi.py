@@ -5,86 +5,49 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, pipeline
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import HuggingFacePipeline
+from pydantic import BaseModel
+from langchain_core.messages import HumanMessage
+
+# Import the compiled agent from myagent.py
+from code.src.myagent import agent
+
 
 app = FastAPI()
 
-model = None
-tokenizer = None
-pipe = None
-llm = None
-chain = None
+class Transaction(BaseModel):
+    transaction_id: str
+    date: str
+    account_number: str
+    bank_name: str
+    bank_statement_amount: str
+    book_records_amount: str
+    match_status: str
+    break_reason: str
 
-@app.on_event("startup")
-async def load_model():
-    global model, tokenizer, pipe, llm, chain
-    # Optionally, run the blocking call in a thread pool:
-    loop = asyncio.get_running_loop()
-    model, tokenizer = await loop.run_in_executor(None, lambda: (
-        AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large"),
-        AutoTokenizer.from_pretrained("google/flan-t5-large")
-    ))
-    
-    pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
-    llm = HuggingFacePipeline(pipeline=pipe)
-    
-    prompt_template = """
-    Process the following CSV data and generate the output CSV.
-    Historical CSV:
-    {historical}
-    
-    Current CSV:
-    {current}
-    
-    After the CSV output, on a new line output "ACTIONS:" followed by a summary of actions.
-    """
-    chain = LLMChain(
-        llm=llm,
-        prompt=PromptTemplate.from_template(prompt_template)
-    )
-    print("Model loaded successfully.")
 
-output_csv_content = None
-actions_taken = None
-
-@app.post("/process")
-async def process_files(
-    historical_file: UploadFile = File(...),
-    current_file: UploadFile = File(...)
-):
-    global output_csv_content, actions_taken, chain
-    if chain is None:
-        raise HTTPException(status_code=503, detail="Model is still loading.")
+@app.post("/invoke_agent")
+async def invoke_agent(transaction: Transaction):
     try:
-        hist_bytes = await historical_file.read()
-        curr_bytes = await current_file.read()
-        historical_csv = hist_bytes.decode("utf-8")
-        current_csv = curr_bytes.decode("utf-8")
-        
-        prompt_vars = {"historical": historical_csv, "current": current_csv}
-        result = chain.run(prompt_vars)
-        
-        if "ACTIONS:" in result:
-            output_part, actions_part = result.split("ACTIONS:", 1)
-        else:
-            output_part = result
-            actions_part = "No actions logged."
-        
-        output_csv_content = output_part.strip()
-        actions_taken = actions_part.strip()
-        
-        with open("output_generated.csv", "w", encoding="utf-8") as f:
-            f.write(output_csv_content)
-        
-        return JSONResponse({
-            "message": "Processing complete.",
-            "output": output_csv_content,
-            "actions": actions_taken
-        })
+        human_message_template = f"""\
+### Transaction Details  
+- **ID**: {transaction.transaction_id}  
+- **Account**: {transaction.account_number}  
+- **Bank**: {transaction.bank_name}  
+- **Bank Statement Amount**: {transaction.bank_statement_amount}  
+- **Book Records Amount**: {transaction.book_records_amount}
+- **Date**: {transaction.date} 
+
+### Required Actions And Output Format
+1. Tool chain execution along with explanation 
+2. Mention each tool call request and response (Show tool call in xml format)
+3. Reconciliation status with confidence score 
+4. Plain English summary for auditors  
+"""
+        messages = [HumanMessage(content=human_message_template)]
+        # Run the compiled agent synchronously in an executor if needed
+        result = await asyncio.get_running_loop().run_in_executor(None, lambda: agent.invoke({"messages": messages}))
+        # Extract content from each message returned by the agent
+        response = [msg.content for msg in result["messages"]]
+        return {"result": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/result")
-def get_result():
-    if not output_csv_content:
-        raise HTTPException(status_code=404, detail="No result found. Process files first.")
-    return {"output_csv": output_csv_content, "actions": actions_taken}
