@@ -8,37 +8,56 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from langgraph.graph import StateGraph, START, END
-from IPython.display import Image, display
-import os
-import requests
 from preprocess import load_and_preprocess_data
-from tools import ReconciliationTools
-from query_tool import HistoricalDataQueryTool
-from statistical import StatisticalAnalysisTool
+from tools_ import ReconciliationTools
+from tools.query import HistoricalDataQueryTool
+from tools.statistical import StatisticalAnalysisTool
+from tools.add import AddTransactionTool
+from tools.alert import AlertTool
+from tools.update import UpdateRecordTool
+from tools.cur_converter import CurrencyConvertorTool
+from tools.details import DetailTool
+from tools.escalate import EscalateTool
+from tools.prediction import PredictionTool
+from tools.remove import RemoveTransactionTool
 
+
+## Load the LLM
 load_dotenv()
 
 llm = ChatGroq(model="deepseek-r1-distill-qwen-32b", model_kwargs={
         "max_completion_tokens": 4000
     })
 
+## Load the Data
 historical_file = "data/synthetic_historical_report.csv"
 current_file = "data/synthetic_current_report.csv"
 historical_data, current_data = load_and_preprocess_data(historical_file, current_file)
+
+# Initialize tools
 recon_tools = ReconciliationTools(historical_data, current_data)
-query_tool = HistoricalDataQueryTool(historical_data)
+query_tool = HistoricalDataQueryTool(historical_data, current_data)
 stat_tool = StatisticalAnalysisTool(historical_data, current_data)
+add_tool = AddTransactionTool(historical_data, current_data)
+alert_tool = AlertTool(historical_data, current_data)
+update_tool = UpdateRecordTool(historical_data, current_data)
+cur_converter = CurrencyConvertorTool(historical_data, current_data)
+detail_tool = DetailTool(historical_data, current_data)
+escalate_tool = EscalateTool(historical_data, current_data)
+get_prediction = PredictionTool(historical_data, current_data)
+remove_tool = RemoveTransactionTool(historical_data, current_data)
 
 # Augment the LLM with tools
-tools = [recon_tools.currency_conversion,
-         recon_tools.escalate_to_finance,
-         query_tool.query,
-         recon_tools.update_amount,
-         recon_tools.remove_transaction,
-         recon_tools.get_more_details,
+tools = [query_tool.query,
          stat_tool.statistical_analysis,
-         recon_tools.get_prediction,
-         recon_tools.human_alert]
+         add_tool.add_transaction,
+         alert_tool.human_alert,
+         update_tool.update_amount,
+         cur_converter.currency_conversion,
+         detail_tool.get_more_details,
+         escalate_tool.escalate_to_finance,
+         get_prediction.get_prediction,
+         remove_tool.remove_transaction]
 
 tools_by_name = {tool.name: tool for tool in tools}
 llm_with_tools = llm.bind_tools(tools)
@@ -132,21 +151,14 @@ agent_builder.add_edge("environment", "llm_call")
 # Compile the agent
 agent = agent_builder.compile()
 
-# Show the agent
-# display(Image(agent.get_graph(xray=True).draw_mermaid_png()))
-
-# Invoke
-# messages = [HumanMessage(content="")]
-
 trans = {
-    'Transaction ID': 'TXN-006253',
+    'Transaction ID': '3156.0',
     'Date': '2040-02-13',
     'Account Number': 'ACCT-611080',
     'Bank Name': 'Bank of America',
     'Bank Statement Amount': '-4.0030627',
     'Book Records Amount': '-4.087139',
     'Match Status': 'Break',
-    'Break Reason': 'Bank Error'
 }
 
 human_message_template = f"""\

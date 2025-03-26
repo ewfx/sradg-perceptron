@@ -1,30 +1,18 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-from transformers import pipeline
-from langchain_community.llms import HuggingFacePipeline
+import sqlite3
+import pandas as pd
 
+historical_file = "data/synthetic_historical_report.csv"
+current_file = "data/synthetic_current_report.csv"
+# Sample historical CSV data
+historical_data = pd.read_csv(historical_file)
 
-# model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
-# tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
+conn = sqlite3.connect(":memory:")
+historical_data.to_sql('historical_data', conn, index=False)
 
-# model.save_pretrained("models/generative/flan-t5-large")
-# tokenizer.save_pretrained("models/tokenizers/flan-t5-large")
+clean_sql="SELECT * FROM historical_data WHERE Date='2040-02-13'"
 
-# model = AutoModelForSeq2SeqLM.from_pretrained("models/generative/flan-t5-large")
-# tokenizer = AutoTokenizer.from_pretrained("models/tokenizers/flan-t5-large")
+clean_sql = clean_sql.strip().rstrip(';')
+if "limit" not in clean_sql.lower():
+    clean_sql += " LIMIT 5"
 
-pipe = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
-
-
-llm = HuggingFacePipeline(pipeline=pipe)
-# Example usage
-prompt_template = "Answer the following question: {question}"
-chain = LLMChain(
-    llm=llm,
-    prompt=PromptTemplate.from_template(prompt_template)
-)
-
-# Run the model
-result = chain.run({"question": "What is machine learning?"})
-print(result)
+print(pd.read_sql(clean_sql, conn))s

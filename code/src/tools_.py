@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional
 import uuid
 from langchain_core.tools import tool
 from sklearn.ensemble import IsolationForest  # Example model
-from categorizer import predict_single_record
+from helper.categorizer import predict_single_record
 import random
 import cloudpickle
 
@@ -15,7 +15,7 @@ class ReconciliationTools:
         self._prepare_data()
         
         # Initialize mock ML model
-        self.model = self._train_mock_model()
+        # self.model = self._train_mock_model()
 
     def _prepare_data(self):
         """Convert CSV data to SQL-like structure"""
