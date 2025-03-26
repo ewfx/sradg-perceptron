@@ -76,11 +76,20 @@ Automates financial reconciliation using AI agents to detect mismatches (amounts
     git clone https://github.com/ewfx/sradg-perceptron.git
     ```
 2. Install dependencies
+
     ```sh
-    conda env create -f environment.yml  # or pip install -r requirements.txt (for Python)
+    conda env create -f environment.yml
     conda activate ghack
     ```
-3. Run the project
+
+3. Create a .env file and add following keys
+
+    ```
+    GROQ_API_KEY=
+    HUGGINGFACEHUB_API_TOKEN=
+    ```
+
+4. Run the project
     ```sh
     python code/src/myagent.py  # or python app.py
     ```
