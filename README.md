@@ -18,11 +18,12 @@ A modular AI-powered reconciliation system that handles bank statement vs. book 
 
 ## 🎥 Demo
 
-🔗 [Live Demo](#) (if applicable)  
-📹 [Video Demo](#) (if applicable)  
+📹 [Video Demo](#)  
 🖼️ Screenshots:
 
-![Screenshot 1](link-to-image)
+![Screenshot 1](artifacts/pictures/ss1.png)
+![Screenshot 2](artifacts/pictures/ss2.png)
+![Screenshot 3](artifacts/pictures/ss3.png)
 
 ## ⚙️ What It Does
 

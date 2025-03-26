@@ -65,7 +65,6 @@ tools = [query_tool.query,
 tools_by_name = {tool.name: tool for tool in tools}
 llm_with_tools = llm.bind_tools(tools)
 
-trans['Account Number'] = 'ACCT-611080'
 time_diff_threshold = 3  # From your TimeDifferenceAgent
 amt_variance_threshold = 100  
 percent_variance_threshold = 2
@@ -179,9 +178,11 @@ human_message_template = f"""\
 
 ### Required Actions And Output Format
 1. Tool chain execution along with explanation 
-2. Mention each tool call request and response (Show tool call in xml format)
+2. Mention each tool call request and fetch the response and print it (Show tool call in xml format)
 3. Reconciliation status with confidence score 
 4. Plain English summary for auditors  
+
+**CALL THE TOOLS AND DO THE PROCESSING ON THEIR RESPONSE**
 """ 
 
 # print(human_message_template)

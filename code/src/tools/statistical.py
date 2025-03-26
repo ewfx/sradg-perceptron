@@ -18,7 +18,6 @@ class StatisticalAnalysisTool:
     @tool
     def statistical_analysis(self, transaction_id: str) -> Dict[str, Any]:
         """Perform comprehensive statistical analysis for transaction reconciliation"""
-        
         try:
             # Get current transaction
             current_txn = self.current[self.current['Transaction ID'] == transaction_id].iloc[0]

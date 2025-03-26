@@ -7,4 +7,5 @@ historical_data, current_data = load_and_preprocess_data(historical_file, curren
 
 # write a function to return a record randomly from the current data in form a dictionary
 def record():
-    return current_data.sample(1).to_dict(orient='records')[0]
+    filtered_data = current_data[current_data['Account Number'] != -1]
+    return filtered_data.sample(1).to_dict(orient='records')[0]
