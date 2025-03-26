@@ -14,7 +14,16 @@
 
 ## 🎯 Introduction
 
-A modular AI-powered reconciliation system that handles bank statement vs. book record matching with dynamic column detection, multi-agent analysis, and corrective actions.
+🚀 Overview
+This repository contains a fully agentic AI reconciliation system that:
+
+-   ✅ Detects and resolves anomalies in financial transactions
+-   ✅ Uses LLM-driven decision-making to automate reconciliation
+-   ✅ Performs tool-based investigations (query history, update records, escalate issues, etc.)
+-   ✅ Minimizes false positives using statistical thresholds & ML-based anomaly detection
+-   ✅ Supports auditability through structured tool execution logs
+
+This AI agent mimics real-world Ops teams, handling missing transactions, amount mismatches, fraud detection, and resolution autonomously.
 
 ## 🎥 Demo
 
@@ -27,7 +36,31 @@ A modular AI-powered reconciliation system that handles bank statement vs. book 
 
 ## ⚙️ What It Does
 
-Automates financial reconciliation using AI agents to detect mismatches (amounts, dates, fraud), suggest fixes, and escalate issues. Handles dynamic report formats via LLM-powered column detection and offers self-healing corrections.
+-   **AI-Driven Anomaly Detection**
+
+    -   Compares transactions from Bank & Ledger to identify mismatches.
+    -   Applies machine learning (Isolation Forest, Statistical Analysis) to detect unusual transactions.
+    -   Uses FAISS (or other historical search methods) to find similar past anomalies.
+
+-   **Fully Autonomous Decision Making (LLM-Powered)**
+
+    -   Uses GPT-based LLM to determine the best resolution for each anomaly.
+    -   Executes corrective actions based on predefined thresholds.
+    -   Calls investigation tools to collect more details when required.
+
+-   **Dynamic Tool Execution for Resolution**
+
+    -   Historical Data Query: Find similar past anomalies.
+    -   Statistical Analysis: Detect amount & timing variances.
+    -   Transaction Addition & Removal: Adjust incorrect records.
+    -   Currency Conversion: Fix discrepancies due to exchange rates.
+    -   Alerts & Escalations: Notify finance teams for manual review.
+    -   Prediction Tool: Suggest next steps based on past resolutions.
+
+-   **Explainable & Auditable Actions**
+    -   Every tool execution logs structured requests & responses in XML format.
+    -   Confidence scores help auditors understand how decisions are made.
+    -   Generates plain English summaries for financial reports.
 
 ## 🛠️ How We Built It
 
@@ -50,21 +83,6 @@ Automates financial reconciliation using AI agents to detect mismatches (amounts
 
     -   **Problem**: Varying column names/date formats across reports.
     -   **Solution**: Hybrid LLM + fuzzy matching with fallback rules.
-
--   **Precision-Recall Tradeoff**
-
-    -   **Issue**: Over-aggressive auto-matching caused false negatives.
-    -   **Fix**: Confidence scoring + human-in-the-loop validation.
-
--   **Currency Flux**
-
-    -   **Hurdle**: Real-time vs historical forex rate mismatches.
-    -   **Resolution**: Blend ECB API rates + internal historic averages.
-
--   **Audit Trail Integrity**
-
-    -   **Risk**: Immutable logging of automated changes.
-    -   **Implementation**: Blockchain-style hashing for critical operations.
 
 -   **Agent Orchestration**
     -   **Complexity**: Avoiding circular tool dependencies.
